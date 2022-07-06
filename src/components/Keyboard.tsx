@@ -12,8 +12,9 @@ export default function Keyboard() {
       case 'Enter':
         if (!state.isGameOver) setState(old => ({
           ...old,
-          guess: '',
+          userSolution: '',
           rowIndex: old.rowIndex + 1,
+          nbAttempts: old.nbAttempts - 1,
           colIndex: 0,
           isSubmitted: true
         }));
@@ -22,7 +23,7 @@ export default function Keyboard() {
       case 'Backspace':
         if (!state.isGameOver) setState(old => ({
           ...old,
-          guess: old.guess.slice(0, -1) + '',
+          userSolution: old.userSolution.slice(0, -1) + '',
           colIndex: old.colIndex - 1,
           isSubmitted: false
         }));
@@ -31,7 +32,7 @@ export default function Keyboard() {
       default:
         if (!state.isGameOver) setState(old => ({
           ...old,
-          guess: old.guess + key,
+          userSolution: old.userSolution + key,
           colIndex: old.colIndex + 1,
           isSubmitted: false
         }));

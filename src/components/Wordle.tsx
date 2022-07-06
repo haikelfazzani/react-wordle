@@ -11,9 +11,13 @@ export function Wordle({ wordList, solution }) {
   }
 
   return <WordleStore wordList={wordList} solution={solution}>
-    <Board />
-    <Keyboard />
+    <h1 className="center">Wordle</h1>
 
-    <button onClick={onNewGame}>New Game</button>
+    <Board />
+
+    <div className="center">
+      <Keyboard />
+      <button onClick={onNewGame}>New Game</button>
+    </div>
   </WordleStore>
 }

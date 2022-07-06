@@ -5,12 +5,13 @@ import WordleContext from "./WordleContext";
 const initState = {
   wordList: [],
   solution: '',
+  nbAttempts: 6,
 
   board: Grid,
   isGameOver: false,
   isSubmitted: false,
 
-  guess: '',
+  userSolution: '',
 
   rowIndex: 0,
   colIndex: 0,

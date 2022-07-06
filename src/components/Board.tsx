@@ -4,33 +4,41 @@ import Grid from './Grid';
 
 export default function Board() {
   const { state, setState } = useContext(WordleContext);
-  const { isSubmitted, solution, guess, rowIndex, isGameOver,wordList } = state;
+  const { isSubmitted, solution, userSolution, rowIndex, isGameOver, wordList, nbAttempts } = state;
 
   const [board, setBoard] = useState(Grid);
-  const [attempt, setAttempt] = useState(guess);
+  const [attempt, setAttempt] = useState(userSolution);
 
-  const [message, setMessage] = useState(null)
+  const [message, setMessage] = useState(null);
 
   useEffect(() => {
+
+    if (nbAttempts < 1) return;
+
     if (!isSubmitted && !isGameOver) {
       let nBoard = board.slice(0);
 
       nBoard[rowIndex] = <li className='d-flex' key={rowIndex}>
-        {['', '', '', '', ''].map((col, i) => <span className='cell' key={i}>{guess[i] ?? ' '}</span>)}
+        {['', '', '', '', ''].map((col, i) => <span className='cell' key={i}>{userSolution[i] ?? ' '}</span>)}
       </li>;
 
-      setAttempt(guess)
+      setAttempt(userSolution)
       setBoard(nBoard);
     }
-  }, [guess]);
+  }, [userSolution]);
 
   useEffect(() => {
+    if (nbAttempts < 1) {
+      setMessage('😔 Solution is: ' + solution);
+      return;
+    }
+
     if (isSubmitted && !isGameOver) {
       let nBoard: any = board.slice(0);
       let isEqual = [];
 
-      if(!wordList.includes(attempt)) {
-        setMessage('Word not includes');        
+      if (!wordList.includes(attempt)) {
+        setMessage('Word not includes');
       }
 
       nBoard[rowIndex - 1] = <li className='d-flex' key={rowIndex - 1}>
