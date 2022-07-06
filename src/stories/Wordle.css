@@ -95,27 +95,40 @@ pre {
 }
 
 /*************** Animation *******************/
-
-.flipInX {
-  backface-visibility: visible !important;
-  animation: flipInX 2s;
+.shake {
+  animation: shake 250ms ease-in-out;
 }
 
-@keyframes flipInX {
+@keyframes shake {
+  10%,
+  90% {
+    transform: translateX(-1px);
+  }
+  20%,
+  80% {       
+    transform: translateX(2px);
+  }
+  30%,
+  50%,
+  70% {
+    transform: translateX(-4px);
+  }
+  40%,
+  60% {
+    transform: translateX(4px);
+  }
+}
+
+.flip {  
+  animation: flip .4s ease-in-out;
+}
+
+@keyframes flip {
   0% {
     transform: perspective(400px) rotateX(90deg);
     opacity: 0;
   }
-
-  40% {
-    transform: perspective(400px) rotateX(10deg);
-  }
-
-  70% {
-    transform: perspective(400px) rotateX(20deg);
-  }
-
-  100% {
+  100% {       
     transform: perspective(400px) rotateX(0deg);
     opacity: 1;
   }

@@ -4,7 +4,7 @@ import Grid from './Grid';
 
 export default function Board() {
   const { state, setState } = useContext(WordleContext);
-  const { isSubmitted, solution, userSolution, rowIndex, isGameOver, wordList, nbAttempts,emptyCells } = state;
+  const { isSubmitted, solution, userSolution, rowIndex, isGameOver, wordList, nbAttempts, emptyCells } = state;
 
   const [board, setBoard] = useState(Grid);
   const [attempt, setAttempt] = useState(userSolution);
@@ -37,7 +37,7 @@ export default function Board() {
       let isEqual = [];
 
       if (!wordList.includes(attempt)) {
-        setMessage('Not in the word list');
+        setMessage(attempt + ': Not in the word list');
       }
 
       nBoard[rowIndex - 1] = <li className='d-flex' key={rowIndex - 1}>
@@ -57,7 +57,7 @@ export default function Board() {
             isEqual.push(false);
           }
 
-          return <span key={i} className={'cell flipInX ' + className}>{attempt[i] ?? ' '}</span>
+          return <span key={i} className={'cell flip ' + className}>{attempt[i] ?? ' '}</span>
         })}
       </li>;
 
