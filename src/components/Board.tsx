@@ -4,7 +4,7 @@ import Grid from './Grid';
 
 export default function Board() {
   const { state, setState } = useContext(WordleContext);
-  const { isSubmitted, solution, userSolution, rowIndex, isGameOver, wordList, nbAttempts } = state;
+  const { isSubmitted, solution, userSolution, rowIndex, isGameOver, wordList, nbAttempts,emptyCells } = state;
 
   const [board, setBoard] = useState(Grid);
   const [attempt, setAttempt] = useState(userSolution);
@@ -12,14 +12,13 @@ export default function Board() {
   const [message, setMessage] = useState(null);
 
   useEffect(() => {
-
     if (nbAttempts < 1) return;
 
     if (!isSubmitted && !isGameOver) {
       let nBoard = board.slice(0);
 
       nBoard[rowIndex] = <li className='d-flex' key={rowIndex}>
-        {['', '', '', '', ''].map((col, i) => <span className='cell' key={i}>{userSolution[i] ?? ' '}</span>)}
+        {emptyCells.map((col, i) => <span className='cell' key={i}>{userSolution[i] ?? ' '}</span>)}
       </li>;
 
       setAttempt(userSolution)
@@ -38,11 +37,11 @@ export default function Board() {
       let isEqual = [];
 
       if (!wordList.includes(attempt)) {
-        setMessage('Word not includes');
+        setMessage('Not in the word list');
       }
 
       nBoard[rowIndex - 1] = <li className='d-flex' key={rowIndex - 1}>
-        {['', '', '', '', ''].map((col, i) => {
+        {emptyCells.map((col, i) => {
           let className = '';
 
           if (solution[i] === attempt[i]) {
@@ -69,7 +68,6 @@ export default function Board() {
 
   return <div className='center'>
     <ul>{board}</ul>
-
     {message && <pre>{message}</pre>}
   </div>
 }

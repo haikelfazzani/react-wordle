@@ -12,7 +12,13 @@ $ npm install react-wordle
 ```jsx
 import { Wordle } from 'react-wordle';
 
-<Wordle wordList={['piano', 'hello']} solution="piano" />
+<Wordle 
+  wordList={['piano', 'hello']}   // word list
+  solution="piano"                // final word solution
+
+  nbRows={6}                      // number of lines
+  nbCols={5}                      // number of cells (letter tile)
+/>
 ```
 
 ### Props
