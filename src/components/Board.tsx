@@ -4,7 +4,7 @@ import Grid from './Grid';
 
 export default function Board() {
   const { state, setState } = useContext(WordleContext);
-  const { isSubmitted, solution, userSolution, rowIndex, isGameOver, wordList, nbAttempts, emptyCells } = state;
+  const { isSubmitted, solution, userSolution, rowIndex, isGameOver, nbAttempts, emptyCells } = state;
 
   const [board, setBoard] = useState(Grid);
   const [attempt, setAttempt] = useState(userSolution);
@@ -27,7 +27,7 @@ export default function Board() {
   }, [userSolution]);
 
   useEffect(() => {
-    if (nbAttempts < 1) {
+    if (nbAttempts < 0) {
       setMessage('😔 Solution is: ' + solution);
       return;
     }
@@ -35,10 +35,6 @@ export default function Board() {
     if (isSubmitted && !isGameOver) {
       let nBoard: any = board.slice(0);
       let isEqual = [];
-
-      if (!wordList.includes(attempt)) {
-        setMessage(attempt + ': Not in the word list');
-      }
 
       nBoard[rowIndex - 1] = <li className='d-flex' key={rowIndex - 1}>
         {emptyCells.map((col, i) => {
@@ -64,7 +60,7 @@ export default function Board() {
       setBoard(nBoard)
       setState(old => ({ ...old, isGameOver: isEqual.every(e => e === true) }))
     }
-  }, [isSubmitted]);
+  }, [isSubmitted, nbAttempts]);
 
   return <div className='center'>
     <ul>{board}</ul>

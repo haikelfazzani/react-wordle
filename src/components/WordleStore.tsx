@@ -13,6 +13,8 @@ const initState = {
   isSubmitted: false,
 
   userSolution: '',
+  isUserSolutionValidLen: false,
+  isUserSolutionInWordList:false,
 
   rowIndex: 0,
   colIndex: 0,
@@ -24,6 +26,7 @@ export function WordleStore({ children, wordList, solution, nbRows, nbCols }: an
     ...initState,
     wordList,
     solution,
+    nbCols: nbCols || 5,
     board: Grid(nbRows || 6, nbCols || 5),
     emptyCells: creatArr(nbCols || 5)
   });

@@ -9,17 +9,30 @@ export default function Keyboard() {
   const { state, setState } = useContext(WordleContext);
 
   const handleKeys = (key: string) => {
-    
+
     if (state.isGameOver) return;
-    
-    if (key === 'Enter') setState(old => ({
-      ...old,
-      userSolution: '',
-      rowIndex: old.rowIndex + 1,
-      nbAttempts: old.nbAttempts - 1,
-      colIndex: 0,
-      isSubmitted: true
-    }));
+
+    if (key === 'Enter') setState(old => {
+
+      const isUserSolutionInWordList = state.wordList.includes(old.userSolution);
+      const isUserSolutionValidLen = old.userSolution.length >= old.nbCols;
+
+      let isValidSolution = [isUserSolutionInWordList, isUserSolutionValidLen];
+      let isValid = isValidSolution.every(v => v);
+
+
+      return {
+        ...old,
+        userSolution: isValid ? '' : old.userSolution,
+        rowIndex: isValid ? old.rowIndex + 1 : old.rowIndex,
+        nbAttempts: isValid ? old.nbAttempts - 1 : old.nbAttempts,
+        colIndex: isValid ? 0 : old.colIndex,
+        isSubmitted: isValid,
+
+        isUserSolutionValidLen,
+        isUserSolutionInWordList
+      }
+    });
 
     if (key === 'Backspace' || key === '←') setState(old => ({
       ...old,
@@ -27,13 +40,17 @@ export default function Keyboard() {
       colIndex: old.colIndex - 1,
       isSubmitted: false
     }));
-    
-    if (/[a-z]/gi.test(key) && key.length === 1) setState(old => ({
-      ...old,
-      userSolution: old.userSolution + (key.toLowerCase()),
-      colIndex: old.colIndex + 1,
-      isSubmitted: false
-    }));
+
+    if (/[a-z]/gi.test(key) && key.length === 1) setState(old => {
+      let userSolution = old.userSolution.slice(0, old.nbCols);
+
+      return {
+        ...old,
+        userSolution: userSolution + (key.toLowerCase()),
+        colIndex: old.colIndex + 1,
+        isSubmitted: false
+      }
+    });
   }
 
   const onKeyDown = (e: any) => {
@@ -51,7 +68,7 @@ export default function Keyboard() {
     return () => {
       window.removeEventListener('keydown', onKeyDown)
     }
-  }, []);  
+  }, []);
 
   return (
     <div className='keyboard'>
