@@ -84,13 +84,13 @@ export default function Keyboard() {
   }
 
   const onKeyDown = (e: any) => {
-    if (isGameOver) return;
-
-    const key = typeof e === 'object' ? e.key : e;
-
-    if (key === 'Enter' || key === 'enter') handleEnter()
-    if (key === 'Backspace' || key === '←') handleBackspace()
-    if (key.length === 1 && /[a-z]/gi.test(key)) handleAlpha(key)
+    if (!isGameOver) {
+      const key = typeof e === 'object' ? e.key : e;
+  
+      if (key === 'Enter' || key === 'enter') handleEnter()
+      if (key === 'Backspace' || key === '←') handleBackspace()
+      if (key.length === 1 && /[a-z]/gi.test(key)) handleAlpha(key)
+    }
   }
 
   const onKeyboard = useCallback((letter: string) => {

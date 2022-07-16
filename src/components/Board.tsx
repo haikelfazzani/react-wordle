@@ -16,7 +16,7 @@ export default function Board() {
 
     if (isSubmitted && isWordInList) {
       const temp = drawGrid.slice(0);
-      
+
       temp[rowIndex - 1] = grid[rowIndex - 1].map((col: string, index: number) => {
         let className = 'gray';
         const letterIndex = solution.indexOf(col);
@@ -33,7 +33,10 @@ export default function Board() {
       setMessage('');
     }
 
-    if (isGameOver) setMessage('Game is over: ' + solution);
+    if (isGameOver) {
+      setMessage('Game is over: ' + solution);
+      return;
+    }
   }, [isSubmitted, isGameOver]);
 
   return <div className='center'>
