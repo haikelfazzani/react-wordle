@@ -4,7 +4,7 @@ import WordleContext from './WordleContext';
 export default function Board() {
   const { state, setState } = useContext(WordleContext);
   const { wordList, isGameOver, tempUserSOlution, grid, rowIndex, isSubmitted, solution } = state;
-  const [drawGrid, setDrawGrid] = useState([...grid]);
+  const [drawGrid, setDrawGrid] = useState(grid);
   const [message, setMessage] = useState('');
 
   useEffect(() => {
@@ -48,5 +48,7 @@ export default function Board() {
     </li>)}</ul>
 
     {message && <pre>{message}</pre>}
+
+    <div>{JSON.stringify(state.score)}</div>
   </div>
 }

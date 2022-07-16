@@ -14,15 +14,31 @@ export default function Keyboard() {
 
       const isWordInList = wordList.includes(grid[old.rowIndex].join(''));
 
-      return {
+      const isSolutionFound = old.solution === old.userSolution;
+      const isGameOver = old.rowIndex + 1 >= nbRows || isSolutionFound;
+
+      const score = isGameOver
+        ? {
+          success: isSolutionFound ? old.score.success + 1 : old.score.success,
+          fail: isSolutionFound ? old.score.fail : old.score.fail + 1,
+          nbGames: old.score.nbGames + 1
+        }
+        : old.score;
+
+      const newState = {
         ...old,
         rowIndex: isWordInList ? old.rowIndex + 1 : old.rowIndex,
         colIndex: isWordInList ? 0 : old.colIndex,
         userSolution: isWordInList ? '' : old.userSolution,
         tempUserSOlution: old.userSolution,
         isSubmitted: true,
-        isGameOver: old.rowIndex + 1 >= nbRows || old.solution === old.userSolution
+        isGameOver,
+        score
       }
+
+      localStorage.setItem('wordle-score', JSON.stringify(newState.score))
+
+      return newState
     });
 
   }
@@ -86,7 +102,7 @@ export default function Keyboard() {
   const onKeyDown = (e: any) => {
     if (!isGameOver) {
       const key = typeof e === 'object' ? e.key : e;
-  
+
       if (key === 'Enter' || key === 'enter') handleEnter()
       if (key === 'Backspace' || key === '←') handleBackspace()
       if (key.length === 1 && /[a-z]/gi.test(key)) handleAlpha(key)
