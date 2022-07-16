@@ -1,69 +1,49 @@
-import React, { useContext, useEffect, useState } from 'react'
+import React, { useState, useEffect, useContext } from 'react';
 import WordleContext from './WordleContext';
-import Grid from './Grid';
 
 export default function Board() {
   const { state, setState } = useContext(WordleContext);
-  const { isSubmitted, solution, userSolution, rowIndex, isGameOver, nbAttempts, emptyCells } = state;
-
-  const [board, setBoard] = useState(Grid);
-  const [attempt, setAttempt] = useState(userSolution);
-
-  const [message, setMessage] = useState(null);
+  const { wordList, isGameOver, tempUserSOlution, grid, rowIndex, isSubmitted, solution } = state;
+  const [drawGrid, setDrawGrid] = useState([...grid]);
+  const [message, setMessage] = useState('');
 
   useEffect(() => {
-    if (nbAttempts < 1) return;
+    const isWordInList = wordList.includes(tempUserSOlution);
 
-    if (!isSubmitted && !isGameOver) {
-      let nBoard = board.slice(0);
-
-      nBoard[rowIndex] = <li className='d-flex' key={rowIndex}>
-        {emptyCells.map((col, i) => <span className='cell' key={i}>{userSolution[i] ?? ' '}</span>)}
-      </li>;
-
-      setAttempt(userSolution)
-      setBoard(nBoard);
-    }
-  }, [userSolution]);
-
-  useEffect(() => {
-    if (nbAttempts < 0) {
-      setMessage('😔 Solution is: ' + solution);
-      return;
+    if (!isWordInList && isSubmitted) {
+      setMessage(tempUserSOlution.length !== solution.length ? 'Not enough letters' : 'word is not in list')
     }
 
-    if (isSubmitted && !isGameOver) {
-      let nBoard: any = board.slice(0);
-      let isEqual = [];
+    if (isSubmitted && isWordInList) {
+      const temp = drawGrid.slice(0);
+      
+      temp[rowIndex - 1] = grid[rowIndex - 1].map((col: string, index: number) => {
+        let className = 'gray';
+        const letterIndex = solution.indexOf(col);
 
-      nBoard[rowIndex - 1] = <li className='d-flex' key={rowIndex - 1}>
-        {emptyCells.map((col, i) => {
-          let className = '';
+        if (letterIndex === index || solution[index] === col) className = 'green';
+        if (letterIndex !== index && letterIndex > -1 && solution[index] !== col) {
+          className = 'yellow';
+        }
 
-          if (solution[i] === attempt[i]) {
-            className = 'green';
-            isEqual.push(true)
-          }
-          else if (solution.includes(attempt[i])) {
-            className = 'yellow';
-            isEqual.push(false);
-          }
-          else {
-            className = 'gray';
-            isEqual.push(false);
-          }
+        return className + ' flip'
+      });
 
-          return <span key={i} className={'cell flip ' + className}>{attempt[i] ?? ' '}</span>
-        })}
-      </li>;
-
-      setBoard(nBoard)
-      setState(old => ({ ...old, isGameOver: isEqual.every(e => e === true) }))
+      setDrawGrid(temp);
+      setMessage('');
     }
-  }, [isSubmitted, nbAttempts]);
+
+    if (isGameOver) setMessage('Game is over: ' + solution);
+  }, [isSubmitted, isGameOver]);
 
   return <div className='center'>
-    <ul>{board}</ul>
+    <ul>{drawGrid.map((row, i: number) => <li className='d-flex' key={i}>
+      {row.map((col: any, index: number) => {
+        const letter = grid[i][index];
+        return <span className={'cell ' + col} key={index + '-cell'}>{isNaN(letter) ? letter : ''}</span>
+      })}
+    </li>)}</ul>
+
     {message && <pre>{message}</pre>}
   </div>
 }

@@ -11,5 +11,7 @@ export const Single: ComponentStory<typeof Wordle> = () => (
   <Wordle
     wordList={wordList}
     solution={wordList[Math.floor(Math.random() * wordList.length)]}
+    nbRows={5}
+    nbCols={5}
   />
 );

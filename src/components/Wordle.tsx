@@ -4,13 +4,13 @@ import Keyboard from "./Keyboard";
 
 import { WordleStore } from "./WordleStore";
 
-export function Wordle({ wordList, solution }) {
+export function Wordle({ wordList, solution, nbRows, nbCols }) {
 
   const onNewGame = () => {
     window.location.reload()
   }
 
-  return <WordleStore wordList={wordList} solution={solution}>
+  return <WordleStore wordList={wordList} solution={solution} nbRows={nbRows} nbCols={nbCols}>
     <h1 className="center">Wordle</h1>
 
     <Board />

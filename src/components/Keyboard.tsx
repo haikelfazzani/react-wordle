@@ -1,4 +1,4 @@
-import React, { useCallback, useContext, useEffect } from 'react'
+import React, { useCallback, useContext, useEffect } from 'react';
 import WordleContext from './WordleContext';
 
 const topRow = ["Q", "W", "E", "R", "T", "Y", "U", "I", "O", "P"];
@@ -7,82 +7,114 @@ const bottomRow = ["Z", "X", "C", "V", "B", "N", "M", "←", "Enter"];
 
 export default function Keyboard() {
   const { state, setState } = useContext(WordleContext);
+  const { wordList, nbRows, grid, isGameOver } = state;
 
-  const handleKeys = (key: string) => {
+  const handleEnter = () => {
+    setState((old: any) => {
 
-    if (state.isGameOver) return;
-
-    if (key === 'Enter') setState(old => {
-
-      const isUserSolutionInWordList = state.wordList.includes(old.userSolution);
-      const isUserSolutionValidLen = old.userSolution.length >= old.nbCols;
-
-      let isValidSolution = [isUserSolutionInWordList, isUserSolutionValidLen];
-      let isValid = isValidSolution.every(v => v);
-
+      const isWordInList = wordList.includes(grid[old.rowIndex].join(''));
 
       return {
         ...old,
-        userSolution: isValid ? '' : old.userSolution,
-        rowIndex: isValid ? old.rowIndex + 1 : old.rowIndex,
-        nbAttempts: isValid ? old.nbAttempts - 1 : old.nbAttempts,
-        colIndex: isValid ? 0 : old.colIndex,
-        isSubmitted: isValid,
-
-        isUserSolutionValidLen,
-        isUserSolutionInWordList
+        rowIndex: isWordInList ? old.rowIndex + 1 : old.rowIndex,
+        colIndex: isWordInList ? 0 : old.colIndex,
+        userSolution: isWordInList ? '' : old.userSolution,
+        tempUserSOlution: old.userSolution,
+        isSubmitted: true,
+        isGameOver: old.rowIndex + 1 >= nbRows || old.solution === old.userSolution
       }
     });
 
-    if (key === 'Backspace' || key === '←') setState(old => ({
-      ...old,
-      userSolution: old.userSolution.slice(0, -1) + '',
-      colIndex: old.colIndex - 1,
-      isSubmitted: false
-    }));
+  }
 
-    if (/[a-z]/gi.test(key) && key.length === 1) setState(old => {
-      let userSolution = old.userSolution.slice(0, old.nbCols);
+  const handleBackspace = () => {
+    setState((old: any) => {
+      const prevCell = old.colIndex - 1;
 
-      return {
-        ...old,
-        userSolution: userSolution + (key.toLowerCase()),
-        colIndex: old.colIndex + 1,
-        isSubmitted: false
+      if (prevCell > -1) {
+
+        const row = grid[old.rowIndex];
+        row[prevCell] = '';
+        const temp = old.grid.slice(0);
+
+        return {
+          ...old,
+          userSolution: old.userSolution.slice(0, -1),
+          colIndex: prevCell,
+          grid: temp,
+          isSubmitted: false
+        }
       }
+      else {
+        return {
+          ...old,
+          userSolution: '',
+          colIndex: 0
+        }
+      }
+
+    });
+  }
+
+  const handleAlpha = (key: string) => {
+    setState((old: any) => {
+      const nextCell = old.colIndex + 1;
+      if (nextCell <= old.solution.length) {
+
+        const row = grid[old.rowIndex];
+        row[old.colIndex] = key;
+        const temp = old.grid.slice(0);
+
+        return {
+          ...old,
+          userSolution: old.userSolution + key,
+          colIndex: nextCell,
+          grid: temp,
+          isSubmitted: false
+        }
+      }
+      else {
+        return {
+          ...old,
+          colIndex: old.solution.length
+        }
+      }
+
     });
   }
 
   const onKeyDown = (e: any) => {
-    const key = e.key as string;
-    handleKeys(key)
+    if (isGameOver) return;
+
+    const key = typeof e === 'object' ? e.key : e;
+
+    if (key === 'Enter' || key === 'enter') handleEnter()
+    if (key === 'Backspace' || key === '←') handleBackspace()
+    if (key.length === 1 && /[a-z]/gi.test(key)) handleAlpha(key)
   }
 
   const onKeyboard = useCallback((letter: string) => {
-    handleKeys(letter)
-  }, []);
+    if (!isGameOver) onKeyDown(letter.toLocaleLowerCase())
+  }, [isGameOver]);
 
   useEffect(() => {
     window.addEventListener('keydown', onKeyDown)
-
     return () => {
       window.removeEventListener('keydown', onKeyDown)
     }
-  }, []);
+  }, [isGameOver]);
 
-  return (
-    <div className='keyboard'>
-      <ul className='center flex-row'>
-        {topRow.map(letter => <li key={letter} onClick={() => { onKeyboard(letter) }}>{letter}</li>)}
-      </ul>
+  return <div className='keyboard'>
+    <ul className='center flex-row'>
+      {topRow.map(letter => <li key={letter} onClick={() => { onKeyboard(letter) }}>{letter}</li>)}
+    </ul>
 
-      <ul className='center flex-row'>
-        {middleRow.map(letter => <li key={letter} onClick={() => { onKeyboard(letter) }}>{letter}</li>)}
-      </ul>
+    <ul className='center flex-row'>
+      {middleRow.map(letter => <li key={letter} onClick={() => { onKeyboard(letter) }}>{letter}</li>)}
+    </ul>
 
-      <ul className='center flex-row'>
-        {bottomRow.map(letter => <li key={letter} onClick={() => { onKeyboard(letter) }}>{letter}</li>)}
-      </ul>
-    </div>
-  )
+    <ul className='center flex-row'>
+      {bottomRow.map(letter => <li key={letter} onClick={() => { onKeyboard(letter) }}>{letter}</li>)}
+    </ul>
+  </div>
 }
